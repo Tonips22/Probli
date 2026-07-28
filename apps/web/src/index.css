@@ -80,9 +80,7 @@ body {
 
 h1,
 h2 {
-  font-family: var(--heading);
   font-weight: 500;
-  color: var(--text-h);
 }
 
 h1 {
@@ -105,4 +103,27 @@ h2 {
 }
 p {
   margin: 0;
+}
+
+
+@theme{
+  /*Colors*/
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-accent: var(--accent);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  /*Fonts*/
+  --font-primary: var(--primary-font);
+  --font-secondary: var(--secondary-font);
 }
