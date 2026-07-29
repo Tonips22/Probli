@@ -1,5 +1,9 @@
 import express from "express";
 import { prisma } from "./db.js";
+import {
+  createPredictionSchema,
+  resolvePredictionSchema,
+} from "@probli/shared";
 
 const app = express();
 app.use(express.json());
@@ -22,16 +26,47 @@ app.get("/predictions", async (req, res) => {
 
 // Crear una predicción
 app.post("/predictions", async (req, res) => {
-  const { statement, confidence } = req.body;
-
-  if (!statement || typeof confidence !== "number") {
-    return res.status(400).json({ error: "Faltan datos o son inválidos" });
+  const result = createPredictionSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ errors: result.error.issues });
   }
 
-  const prediction = await prisma.prediction.create({
-    data: { statement, confidence },
-  });
+  const prediction = await prisma.prediction.create({ data: result.data });
   res.status(201).json(prediction);
+});
+
+// Resolver una predicción (¿acertaste?)
+app.patch("/predictions/:id/resolve", async (req, res) => {
+  const result = resolvePredictionSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ errors: result.error.issues });
+  }
+
+  const existing = await prisma.prediction.findUnique({
+    where: { id: req.params.id },
+  });
+  if (!existing) {
+    return res.status(404).json({ error: "Predicción no encontrada" });
+  }
+
+  const prediction = await prisma.prediction.update({
+    where: { id: req.params.id },
+    data: { resolved: true, correct: result.data.correct },
+  });
+  res.json(prediction);
+});
+
+// Borrar una predicción
+app.delete("/predictions/:id", async (req, res) => {
+  const existing = await prisma.prediction.findUnique({
+    where: { id: req.params.id },
+  });
+  if (!existing) {
+    return res.status(404).json({ error: "Predicción no encontrada" });
+  }
+
+  await prisma.prediction.delete({ where: { id: req.params.id } });
+  res.status(204).send();
 });
 
 const PORT = 3000;

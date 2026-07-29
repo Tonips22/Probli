@@ -1,25 +1,34 @@
-# Partimos de una imagen oficial de Node ligera
-FROM node:24-slim AS base
-# Instalamos pnpm dentro de la imagen
+# ========== ETAPA 1: la cocina (construir) ==========
+FROM node:24-slim AS build
 RUN npm install -g pnpm@11
 WORKDIR /app
 
-# Copiamos todo el proyecto (respetando el .dockerignore)
+# Copiamos todo e instalamos TODO (incluidas herramientas de construir)
 COPY . .
-
-# Instalamos las dependencias de todo el monorepo
 RUN pnpm install --frozen-lockfile
 
-# Generamos el cliente de Prisma.
-# Le damos una URL falsa: "generate" solo lee el schema, no se conecta a nada.
+# Generamos el cliente de Prisma (URL falsa: generate no se conecta)
 ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 RUN pnpm --filter @probli/api exec prisma generate
 
-# A partir de aquí, modo producción
+# ========== ETAPA 2: el plato (servir) ==========
+FROM node:24-slim AS runner
+RUN npm install -g pnpm@11
+WORKDIR /app
 ENV NODE_ENV=production
 
-# Avisamos de que la app escucha en el puerto 3000
-EXPOSE 3000
+# Solo los manifiestos y el candado de versiones
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+COPY packages/shared/package.json ./packages/shared/
 
-# El comando que arranca el servidor cuando la caja se enciende
-CMD ["pnpm", "--filter", "@probli/api", "start"]
+# Instalamos SOLO las dependencias de producción de la api
+RUN pnpm install --prod --frozen-lockfile --filter @probli/api
+
+# Traemos de la cocina el código + el cliente de Prisma ya generado
+COPY --from=build /app/apps/api/src ./apps/api/src
+
+WORKDIR /app/apps/api
+EXPOSE 3000
+CMD ["pnpm", "start"]
