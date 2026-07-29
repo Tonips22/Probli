@@ -18,8 +18,8 @@ RUN pnpm --filter @probli/api exec prisma generate
 # A partir de aquí, modo producción
 ENV NODE_ENV=production
 
-# Avisamos de que la app escucha en el puerto 4321
-EXPOSE 4321
+# Avisamos de que la app escucha en el puerto 3000
+EXPOSE 3000
 
 # El comando que arranca el servidor cuando la caja se enciende
 CMD ["pnpm", "--filter", "@probli/api", "start"]

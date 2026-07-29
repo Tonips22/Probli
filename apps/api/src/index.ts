@@ -34,7 +34,7 @@ app.post("/predictions", async (req, res) => {
   res.status(201).json(prediction);
 });
 
-const PORT = 4321;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`API escuchando en http://localhost:${PORT}`);
 });
