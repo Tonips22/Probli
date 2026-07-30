@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Pasar los tests
+        run: pnpm --filter @probli/shared test
+
+      - name: Construir el frontend
+        run: pnpm --filter @probli/web build
+
+      - name: Construir la imagen Docker del backend
+        run: docker build -f apps/api/Dockerfile -t probli-api .
