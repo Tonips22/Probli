@@ -24,10 +24,11 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/shared/package.json ./packages/shared/
 
 # Instalamos SOLO las dependencias de producción de la api
-RUN pnpm install --prod --frozen-lockfile --filter @probli/api
+RUN pnpm install --prod --frozen-lockfile
 
 # Traemos de la cocina el código + el cliente de Prisma ya generado
 COPY --from=build /app/apps/api/src ./apps/api/src
+COPY --from=build /app/packages/shared/src ./packages/shared/src
 
 WORKDIR /app/apps/api
 EXPOSE 3000
