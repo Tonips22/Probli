@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { Prediction } from "@probli/shared";
 import { getPredictions, createPrediction } from "./api";
+import PredictionModal from "./components/PredictionModal";
 
 function App() {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [statement, setStatement] = useState("");
   const [confidence, setConfidence] = useState(50);
+  const [selected, setSelected] = useState<Prediction | null>(null);
 
   useEffect(() => {
     getPredictions().then(setPredictions).catch(console.error);
@@ -52,23 +54,44 @@ function App() {
 
         </div>
       </section>
-      <section className="bg-bg">
+      <section className="bg-bg px-8 py-16 flex flex-col gap-4 overflow-y-auto">
         <AnimatePresence>
           {predictions.map((p) => (
             <motion.div
               key={p.id}
               layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              layoutId={`prediction-${p.id}`}
               exit={{ opacity: 0, x: -50 }}
-              className=" group bg-primary/20 p-4 flex justify-between items-center hover:bg-primary-hover cursor-pointer"
+              onClick={() => setSelected(p)}
+              style={{ borderRadius: 16 }}
+              className=" group bg-card p-4 hover:bg-primary-hover cursor-pointer"
             >
-              <span>{p.statement}</span>
-              <span className="text-primary font-bold group-hover:text-text-secondary">{p.confidence}%</span>
+              <motion.div
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-between items-center gap-4"
+              >
+                <motion.span layout="position" layoutId={`prediction-statement-${p.id}`}>
+                  {p.statement}
+                </motion.span>
+                <motion.span
+                  layout="position"
+                  layoutId={`prediction-confidence-${p.id}`}
+                  className="text-primary font-bold group-hover:text-text-secondary"
+                >
+                  {p.confidence}%
+                </motion.span>
+              </motion.div>
             </motion.div>
           ))}
         </AnimatePresence>
       </section>
+
+      <PredictionModal
+        prediction={selected}
+        onClose={() => setSelected(null)}
+      />
     </main>
   );
 }
