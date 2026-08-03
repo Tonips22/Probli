@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { prisma } from "./db.js";
 import {
   createPredictionSchema,
@@ -6,6 +7,12 @@ import {
 } from "@probli/shared";
 
 const app = express();
+const corsOptions = {
+  origin: "http://localhost:5173", // Cambia esto según tu configuración
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type"],
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get("/health", (req, res) => {
