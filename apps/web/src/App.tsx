@@ -61,10 +61,10 @@ function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -50 }}
-              className="bg-slate-900 rounded-xl p-4 flex justify-between items-center"
+              className=" group bg-primary/20 p-4 flex justify-between items-center hover:bg-primary-hover cursor-pointer"
             >
               <span>{p.statement}</span>
-              <span className="text-indigo-400 font-bold">{p.confidence}%</span>
+              <span className="text-primary font-bold group-hover:text-text-secondary">{p.confidence}%</span>
             </motion.div>
           ))}
         </AnimatePresence>
