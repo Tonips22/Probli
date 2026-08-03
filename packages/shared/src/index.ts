@@ -12,3 +12,12 @@ export const resolvePredictionSchema = z.object({
   correct: z.boolean(),
 });
 export type ResolvePredictionInput = z.infer<typeof resolvePredictionSchema>;
+
+export type Prediction = {
+  id: string;
+  statement: string;
+  confidence: number;
+  resolved: boolean;
+  correct: boolean | null;
+  createdAt: string;
+};
