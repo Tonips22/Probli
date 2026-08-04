@@ -8,7 +8,7 @@ import {
 
 const app = express();
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN ||"http://localhost:5173", // Cambia esto según tu configuración
+  origin: process.env.CORS_ORIGIN || "http://localhost:5173", // Cambia esto según tu configuración
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type"],
 };
