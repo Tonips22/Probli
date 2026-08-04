@@ -8,7 +8,7 @@ import {
 
 const app = express();
 const corsOptions = {
-  origin: "http://localhost:5173", // Cambia esto según tu configuración
+  origin: process.env.CORS_ORIGIN ||"http://localhost:5173", // Cambia esto según tu configuración
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type"],
 };
@@ -76,7 +76,7 @@ app.delete("/predictions/:id", async (req, res) => {
   res.status(204).send();
 });
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, () => {
   console.log(`API escuchando en http://localhost:${PORT}`);
 });
